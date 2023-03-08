@@ -16,12 +16,12 @@
                 <h5>Meld je aan bij Anoroc Services, wij beschermen jouw software tegen malware!</h5>
                 <div class="row">
                     <div class="col-md-6">
-                        <label for="voornaam" class="form-label">Naam</label>
-                        <input type="text" class="form-control" id="voornaam" placeholder="Uw voornaam">
+                        <label for="naam" class="form-label">Naam</label>
+                        <input type="text" class="form-control" id="naam" placeholder="Uw naam">
                     </div>
                     <div class="col-md-6">
-                        <label for="naam" class="form-label">Voornaam</label>
-                        <input type="text" class="form-control" id="naam" placeholder="Uw naam">
+                        <label for="voornaam" class="form-label">Voornaam</label>
+                        <input type="text" class="form-control" id="voornaam" placeholder="Uw voornaam">
                     </div>
                 </div>
                 <div class="row">
@@ -54,7 +54,7 @@
                     <div class="col-md-5">
                         <label for="land" class="form-label">Land</label>
                         <select class="form-select form-select-sm" aria-label=".form-select-sm" id="land">
-                            <option selected>Kies een land</option>
+                            <option value="" disabled="disabled" selected>Kies een land</option>
                             <option value="1">België</option>
                             <option value="2">Nederland</option>
                             <option value="3">Duitsland</option>
@@ -63,7 +63,7 @@
                     <div class="col-md-4">
                         <label for="provincie" class="form-label">Provincie</label>
                         <select class="form-select form-select-sm" aria-label=".form-select-sm" id="provincie">
-                            <option selected>Kies een provincie</option>
+                            <option value="" disabled="disabled" selected>Kies een provincie</option>
                             <option value="1">Antwerpen</option>
                             <option value="2">Limburg</option>
                             <option value="3">Luik</option>
@@ -71,7 +71,7 @@
                     </div>
                     <div class="col-md-3">
                         <label for="postcode" class="form-label">Postcode</label>
-                        <select class="form-select form-select-sm" id="postcode" aria-label=".form-select-sm"></select>
+                        <input type="number" class="form-control" id="postcode">
                     </div>
                 </div>
                 <hr>
@@ -120,13 +120,76 @@
                     </div>
                 </div>
                 <hr>
-                <button class="btn btn-primary w-100" type="button">Wave your magic wand</button>
+                <button class="btn btn-primary w-100" type="button" id="knop">Wave your magic wand</button>
             </div>
-            <div class="col-md-5" id="alertArea"></div>
+            <div class="col-md-5">
+                <div class="alert alert-danger m-4" role="alert" id="errorAlert">
+                    <h4>Yikes, errors..</h4>
+                    <p id="errorArea"></p>
+                  </div>
+                  <div class="alert alert-success m-4" role="alert" id="goedGedaanAlert">
+                    <h4>Goed gedaan!</h4>
+                    <p>Aww yeah, je werd geregistreerd.</p>
+                  </div>
+                  <div class="alert alert-primary m-4" role="alert" id="betalingAlert">
+                    <h4>Betalingswijze</h4>
+                    <p id="betalingTekst"></p>
+                  </div>
+            </div>
         </div>
     </div>
     <script>
-        fff
+        //Id's ophalen
+        const voornaam = document.querySelector('#voornaam').value;
+        const naam = document.querySelector('#naam').value;
+        const gebruikersnaam = document.querySelector('#gebruikersnaam').value;
+        const mailadres = document.querySelector('#mailadres').value;
+        const wachtwoord = document.querySelector('#wachtwoord').value;
+        const herhaalWachtwoord = document.querySelector('#herhaalWachtwoord').value;
+        const adres = document.querySelector('#adres').value;
+        const land = document.querySelector('#land').value;
+        const provincie = document.querySelector('#provincie').value;
+        const postcode = document.querySelector('#postcode').value;
+        const knop = document.querySelector('#knop');
+        const errorAlert = document.querySelector('#errorAlert');
+        const errorArea = document.querySelector('#errorArea');
+        const goedGedaanAlert = document.querySelector('#goedGedaanAlert');
+        const betalingAlert = document.querySelector('#betalingAlert');
+        const betalingTekst = document.querySelector('#betalingTekst');
+        let errors = [];
+
+        //functies schrijven
+        
+       
+
+        let validateForm = () => {
+            
+            checkEmptyField(voornaam,'Het veld voornaam is vereist.');
+            checkEmptyField(naam,'Het veld naam is vereist.');
+            checkEmptyField(gebruikersnaam,'Het veld gebruikersnaam is vereist');
+            checkEmptyField(adres,'Adres is vereist');
+            checkEmptyField(land, 'Land is vereist');
+            checkEmptyField(provincie, 'Provincie is vereist');
+            
+            
+            
+            
+            //errors loggen in console
+            errors.forEach(element => {
+                console.log(element);
+            });
+
+
+
+        }
+        
+        let checkEmptyField =(veld, melding) => {
+            if (veld == "") {
+                errors.push(melding);
+            }
+        }
+
+        knop.addEventListener('click', validateForm, false);
     </script>
     <script src="js/bootstrap.min.js"></script>
 </body>
