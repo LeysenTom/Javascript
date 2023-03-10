@@ -94,25 +94,25 @@
                     <div class="col-md-6">
                         <h3>Betaling</h3>
                         <div class="form-check">
-                            <input class="form-check-input" type="radio" name="betaling" id="bankingApp" checked>
+                            <input class="form-check-input" type="radio" name="betaling" id="bankingApp" value="banking app">
                             <label class="form-check-label" for="bankingApp">
                               Banking app
                             </label>
                         </div>
                         <div class="form-check">
-                            <input class="form-check-input" type="radio" name="betaling" id="overschrijving">
+                            <input class="form-check-input" type="radio" name="betaling" id="overschrijving" value="overschrijving">
                             <label class="form-check-label" for="overschrijving">
                               Overschrijving
                             </label>
                         </div>
                         <div class="form-check">
-                            <input class="form-check-input" type="radio" name="betaling" id="visa">
+                            <input class="form-check-input" type="radio" name="betaling" id="visa" value="visa card">
                             <label class="form-check-label" for="visa">
                               Visa card
                             </label>
                         </div>
                         <div class="form-check">
-                            <input class="form-check-input" type="radio" name="betaling" id="paypal">
+                            <input class="form-check-input" type="radio" name="betaling" id="paypal" value="paypal">
                             <label class="form-check-label" for="paypal">
                               PayPal
                             </label>
@@ -140,7 +140,7 @@
     </div>
     <script>
         //Id's ophalen
-        const voornaam = document.getElementById('voornaam');
+        const voornaam = document.querySelector('#voornaam');
         const naam = document.querySelector('#naam');
         const gebruikersnaam = document.querySelector('#gebruikersnaam');
         const mailadres = document.querySelector('#mailadres');
@@ -150,6 +150,11 @@
         const land = document.querySelector('#land');
         const provincie = document.querySelector('#provincie');
         const postcode = document.querySelector('#postcode');
+        const bankingApp = document.querySelector('#bankingApp');
+        const overschrijving = document.querySelector('#overschrijving');
+        const visa = document.querySelector('#visa');
+        const paypal = document.querySelector('#paypal');
+        const algemeneVoorwaarden = document.querySelector('#algemeneVoorwaarden');
         const knop = document.querySelector('#knop');
         const errorAlert = document.querySelector('#errorAlert');
         const errorArea = document.querySelector('#errorArea');
@@ -158,6 +163,7 @@
         const betalingTekst = document.querySelector('#betalingTekst');
         let errors = [];
 
+        //alerts verbergen bij het laden van de pagina
         errorAlert.style.visibility = "hidden";
         goedGedaanAlert.style.visibility = "hidden";
         betalingAlert.style.visibility = "hidden";
@@ -167,12 +173,15 @@
        
 
         let validateForm = () => {
+            //alerts verbergen bij het klikken van de knop
             errorAlert.style.visibility = "hidden";
             goedGedaanAlert.style.visibility = "hidden";
             betalingAlert.style.visibility = "hidden";
 
+            //errors array terug leegmaken
             errors.length = 0;
-            errorArea.innerHTML = "";
+
+            //inputvelden checken op inhoud
             checkEmptyField(voornaam,'Het veld voornaam is vereist.');
             checkEmptyField(naam,'Het veld naam is vereist.');
             checkEmptyField(gebruikersnaam,'Het veld gebruikersnaam is vereist');
@@ -182,8 +191,33 @@
             if(validateEmail(mailadres) == false) {
                 errors.push('E-mailadres is niet correct');
             }
+            validatePasswd(wachtwoord,herhaalWachtwoord);
             
+            //bepaal de betaalkeuze
+            if (bankingApp.checked) {
+                validatePayment(bankingApp);
+            }
+            else if (overschrijving.checked) {
+                validatePayment(overschrijving);
+            }
+            else if (visa.checked) {
+                validatePayment(visa);
+            }
+            else if (paypal.checked) {
+                validatePayment(paypal);
+            }
+            else {
+                errors.push('Kies een betaalmethode.');
+            }
+
+            checkPC(postcode);
+
+            //algemene voorwaarden check
+            if (!algemeneVoorwaarden.checked) {
+                errors.push('De algemene voorwaarden moeten aanvaard worden.')
+            }
             
+            //laat de juiste alerts zien
 
             if(errors.length > 0) {
                 errorAlert.style.visibility = "visible";
@@ -192,6 +226,7 @@
             else {
                 errorAlert.style.visibility = "hidden";
                 goedGedaanAlert.style.visibility = "visible";
+                betalingAlert.style.visibility = "visible";
             }
 
         }
@@ -204,15 +239,53 @@
         }
 
         //controle op een geldig e-mailadres
-        //mailformat gebruikt van de site https://www.w3schools.blog/email-validation-javascript-js
-        //match()-functie https://www.w3schools.com/jsref/jsref_match.asp
+            //mailformat gebruikt van de site https://www.w3schools.blog/email-validation-javascript-js
+            //match()-functie https://www.w3schools.com/jsref/jsref_match.asp
         let validateEmail = emailadres => {
-            let mailformat = /^([A-Za-z0-9_\-\.])+\@([A-Za-z0-9_\-\.])+\.([A-Za-z]{2,4})$/;
-            if (emailadres.value.match(mailformat)) {
+            let mailformat = /([A-Za-z0-9_\-\.])+\@([A-Za-z0-9-\.])+\.([A-Za-z]{2,4})$/;
+            if (emailadres.value == "" || emailadres.value == null) {
+                checkEmptyField(emailadres, 'Het veld email is vereist.');
+            }
+            else if (emailadres.value.substring(0,1) == "." || emailadres.value.substring(0,1) == "-") {
+                return false;
+            }
+            else if (!emailadres.value.substring(emailadres.value.indexOf('@')+1,emailadres.value.indexOf('@') + 2).match(/([A-Za-z0-9])$/)) {
+                return false;
+            }
+            else if (emailadres.value.match(mailformat)) {
                 return true;
             }
             else {
                 return false;
+            }
+        }
+
+        //controle wachtwoord
+        let validatePasswd = (passwd, passwdrpt) => {
+            if (passwd.value == "" || passwd.value == null) {
+                checkEmptyField(passwd,'Het veld wachtwoord is vereist.');
+                checkEmptyField(passwdrpt, 'Het veld herhaal wachtwoord is vereist.');
+            }
+            else if (passwd.value.length < 8) {
+                errors.push('Het wachtwoord moet minstens 8 tekens lang zijn.');
+            }
+            else if (passwd.value != passwdrpt.value) {
+                errors.push('Je wachtwoorden komen niet overeen.');
+            }
+        }
+        
+        //controle betalingswijze
+        let validatePayment = veld => {
+            betalingTekst.innerHTML = "Je betalingswijze is " + veld.value + ".";
+        }
+
+        //controle postcode
+        let checkPC = veld => {
+            if (veld.value == "" || veld.value == null) {
+                checkEmptyField(veld, 'Het veld postcode is vereist.');
+            }
+            else if (veld.value < 1000 || veld.value >= 10000) {
+                errors.push('De waarde van de postcode moet tussen 1000 en 9999 liggen.');
             }
         }
 
