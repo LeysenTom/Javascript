@@ -140,16 +140,16 @@
     </div>
     <script>
         //Id's ophalen
-        const voornaam = document.querySelector('#voornaam').value;
-        const naam = document.querySelector('#naam').value;
-        const gebruikersnaam = document.querySelector('#gebruikersnaam').value;
-        const mailadres = document.querySelector('#mailadres').value;
-        const wachtwoord = document.querySelector('#wachtwoord').value;
-        const herhaalWachtwoord = document.querySelector('#herhaalWachtwoord').value;
-        const adres = document.querySelector('#adres').value;
-        const land = document.querySelector('#land').value;
-        const provincie = document.querySelector('#provincie').value;
-        const postcode = document.querySelector('#postcode').value;
+        const voornaam = document.getElementById('voornaam');
+        const naam = document.querySelector('#naam');
+        const gebruikersnaam = document.querySelector('#gebruikersnaam');
+        const mailadres = document.querySelector('#mailadres');
+        const wachtwoord = document.querySelector('#wachtwoord');
+        const herhaalWachtwoord = document.querySelector('#herhaalWachtwoord');
+        const adres = document.querySelector('#adres');
+        const land = document.querySelector('#land');
+        const provincie = document.querySelector('#provincie');
+        const postcode = document.querySelector('#postcode');
         const knop = document.querySelector('#knop');
         const errorAlert = document.querySelector('#errorAlert');
         const errorArea = document.querySelector('#errorArea');
@@ -158,34 +158,61 @@
         const betalingTekst = document.querySelector('#betalingTekst');
         let errors = [];
 
+        errorAlert.style.visibility = "hidden";
+        goedGedaanAlert.style.visibility = "hidden";
+        betalingAlert.style.visibility = "hidden";
+
         //functies schrijven
         
        
 
         let validateForm = () => {
-            
+            errorAlert.style.visibility = "hidden";
+            goedGedaanAlert.style.visibility = "hidden";
+            betalingAlert.style.visibility = "hidden";
+
+            errors.length = 0;
+            errorArea.innerHTML = "";
             checkEmptyField(voornaam,'Het veld voornaam is vereist.');
             checkEmptyField(naam,'Het veld naam is vereist.');
             checkEmptyField(gebruikersnaam,'Het veld gebruikersnaam is vereist');
             checkEmptyField(adres,'Adres is vereist');
             checkEmptyField(land, 'Land is vereist');
             checkEmptyField(provincie, 'Provincie is vereist');
+            if(validateEmail(mailadres) == false) {
+                errors.push('E-mailadres is niet correct');
+            }
             
             
-            
-            
-            //errors loggen in console
-            errors.forEach(element => {
-                console.log(element);
-            });
 
-
+            if(errors.length > 0) {
+                errorAlert.style.visibility = "visible";
+                errorArea.innerHTML = errors.join('<br>');
+            }
+            else {
+                errorAlert.style.visibility = "hidden";
+                goedGedaanAlert.style.visibility = "visible";
+            }
 
         }
-        
+
+        //controle op lege inputvelden.
         let checkEmptyField =(veld, melding) => {
-            if (veld == "") {
+            if (veld.value == "" || veld.value == null) {
                 errors.push(melding);
+            }
+        }
+
+        //controle op een geldig e-mailadres
+        //mailformat gebruikt van de site https://www.w3schools.blog/email-validation-javascript-js
+        //match()-functie https://www.w3schools.com/jsref/jsref_match.asp
+        let validateEmail = emailadres => {
+            let mailformat = /^([A-Za-z0-9_\-\.])+\@([A-Za-z0-9_\-\.])+\.([A-Za-z]{2,4})$/;
+            if (emailadres.value.match(mailformat)) {
+                return true;
+            }
+            else {
+                return false;
             }
         }
 
